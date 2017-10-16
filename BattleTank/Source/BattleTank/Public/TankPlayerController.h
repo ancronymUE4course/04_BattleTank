@@ -18,6 +18,9 @@ class BATTLETANK_API ATankPlayerController : public APlayerController
 public:
 	ATank* GetControlledTank() const;
 	
-	
+	virtual void BeginPlay() override; // Oehh, saaks aru siis. Aga override checkib vist üles pärimusteed pidi.
+
+private:
+	void LogTankName();
 	
 };
