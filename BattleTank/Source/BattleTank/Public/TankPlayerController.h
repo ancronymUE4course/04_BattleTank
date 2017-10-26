@@ -19,8 +19,11 @@ public:
 	ATank* GetControlledTank() const;
 	
 	virtual void BeginPlay() override; // Oehh, saaks aru siis. Aga override checkib vist üles pärimusteed pidi.
+	virtual void Tick(float DeltaTime) override;
 
 private:
 	void LogTankName();
+	// Move the tank barrel, so that a shot would hit the crosshair intersect with world
+	void AimTowardsCrosshair();
 	
 };
