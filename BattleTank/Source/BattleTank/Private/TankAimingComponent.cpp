@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAimingComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values for this component's properties
@@ -31,9 +33,34 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
-void UTankAimingComponent::MoveTurret(FVector HitLocation)
+void UTankAimingComponent::MoveTurret(FVector HitLocation, float LaunchSpeed)
 {
-	auto CurrentTankName = GetName();
-	UE_LOG(LogTemp, Warning, TEXT("%s Aiming at %s"), *CurrentTankName, *HitLocation.ToString())
+	if (!Barrel) { return; }
+	
+	FVector OutLaunchVelocity;
+	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
+
+	if (UGameplayStatics::SuggestProjectileVelocity(
+		this,
+		OutLaunchVelocity,
+		StartLocation,
+		HitLocation,
+		LaunchSpeed,
+		false,
+		6.f,
+		0.f,
+		ESuggestProjVelocityTraceOption::DoNotTrace
+	)){ 
+	auto SafeVector = OutLaunchVelocity.GetSafeNormal();
+	auto TankName = GetOwner()->GetName();
+	UE_LOG(LogTemp, Warning, TEXT("Required aim direction for %s is %s."), *TankName, *SafeVector.ToString())
+	}
+	return;
+}
+
+void UTankAimingComponent::SetBarrelReference(UStaticMeshComponent * BarrelToSet)
+{
+	Barrel = BarrelToSet;
+	return;
 }
 

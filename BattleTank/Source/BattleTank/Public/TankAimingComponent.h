@@ -23,9 +23,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void MoveTurret(FVector HitLocation);
+	void MoveTurret(FVector HitLocation, float LaunchSpeed);
+
+	void SetBarrelReference(UStaticMeshComponent* BarrelToSet);
 
 private:
-		
+	UStaticMeshComponent* Barrel = nullptr;
 	
 };
