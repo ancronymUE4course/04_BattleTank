@@ -18,6 +18,7 @@ class BATTLETANK_API ATankAIController : public AAIController
 	
 public:
 	virtual void BeginPlay() override; // Oehh, saaks aru siis. Aga override checkib vist üles pärimusteed pidi.
+	virtual void Tick(float DeltaTime) override;
 
 private:
 	void LogTankName() const;	
@@ -25,4 +26,5 @@ private:
 	
 	ATank* GetControlledTank() const;
 	ATank* GetPlayerTank() const;
+	bool AimAtPlayer() const;
 };
