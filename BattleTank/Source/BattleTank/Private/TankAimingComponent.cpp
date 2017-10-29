@@ -33,7 +33,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	// ...
-	SetAim(AimVector);
+	
 }
 
 void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
@@ -56,8 +56,8 @@ void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
 		0.f,
 		ESuggestProjVelocityTraceOption::DoNotTrace // Parameter must be present to prevent bug
 	)){ 
-		AimVector = OutLaunchVelocity.GetSafeNormal();
-		
+		auto AimVector = OutLaunchVelocity.GetSafeNormal();
+		SetAim(AimVector);
 		// auto Time = GetWorld()->GetTimeSeconds();
 		// UE_LOG(LogTemp, Warning, TEXT("Found Solution! %f."), Time)
 	}
@@ -93,7 +93,7 @@ void UTankAimingComponent::SetAim(FVector AimVector)
 	Barrel->Elevate(BarrelDeltaRotator.Pitch);
 	Turret->Rotate(TurretDeltaRotator.Yaw);
 
-	UE_LOG(LogTemp, Warning, TEXT("Aim Rotation %s"), *AimRotator.ToString())
+	// UE_LOG(LogTemp, Warning, TEXT("Aim Rotation %s"), *AimRotator.ToString())
 
 	return;
 }

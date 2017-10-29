@@ -36,6 +36,6 @@ private:
 	UTurret* Turret = nullptr;
 	void SetAim(FVector AimVector);
 
-	FVector AimVector;
+	// FVector AimVector;
 	
 };
