@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAimingComponent.h"
+#include "TankBarrel.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -33,34 +34,46 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
-void UTankAimingComponent::MoveTurret(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
 {
 	if (!Barrel) { return; }
 	
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
 
+	// We have omitted a lot of parameters which the method asks fore, cause the defaults are good aswell
 	if (UGameplayStatics::SuggestProjectileVelocity(
 		this,
 		OutLaunchVelocity,
 		StartLocation,
 		HitLocation,
 		LaunchSpeed,
-		false,
-		6.f,
-		0.f,
+		// false,
+		// 6.f,
+		// 0.f,
 		ESuggestProjVelocityTraceOption::DoNotTrace
 	)){ 
-	auto SafeVector = OutLaunchVelocity.GetSafeNormal();
-	auto TankName = GetOwner()->GetName();
-	UE_LOG(LogTemp, Warning, TEXT("Required aim direction for %s is %s."), *TankName, *SafeVector.ToString())
+	auto AimVector = OutLaunchVelocity.GetSafeNormal();
+	MoveBarrel(AimVector);
 	}
 	return;
 }
 
-void UTankAimingComponent::SetBarrelReference(UStaticMeshComponent * BarrelToSet)
+void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
 {
 	Barrel = BarrelToSet;
+	return;
+}
+
+void UTankAimingComponent::MoveBarrel(FVector AimVector)
+{
+	// Getcurrent Barrel rotation and also Translate SafeVector to worldrotation
+	auto BarrelRotation = Barrel->GetForwardVector().Rotation();
+	auto AimAsRotator = AimVector.Rotation();
+	auto DeltaRotator = AimAsRotator - BarrelRotation;
+
+	Barrel->Elevate(5.f);
+
 	return;
 }
 
