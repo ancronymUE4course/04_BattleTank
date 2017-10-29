@@ -7,6 +7,7 @@
 #include "TankAimingComponent.generated.h"
 
 class UTankBarrel; // Forward declaration, we can define more than one class in a header file ... wut
+class UTurret;
 
 // Holds parameters for Barrels properties and Elevate Method
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -28,9 +29,13 @@ public:
 	void AimForFire(FVector HitLocation, float LaunchSpeed);
 
 	void SetBarrelReference(UTankBarrel* BarrelToSet);
+	void SetTurretReference(UTurret* TurretToSet);
 
 private:
 	UTankBarrel* Barrel = nullptr;
-	void MoveBarrel(FVector AimVector);
+	UTurret* Turret = nullptr;
+	void SetAim(FVector AimVector);
+
+	FVector AimVector;
 	
 };

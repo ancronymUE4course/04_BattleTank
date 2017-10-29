@@ -2,8 +2,10 @@
 
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
+#include "Turret.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 
 // Sets default values for this component's properties
@@ -26,17 +28,18 @@ void UTankAimingComponent::BeginPlay()
 	
 }
 
-
 // Called every frame
 void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	// ...
+	SetAim(AimVector);
 }
 
 void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
 {
 	if (!Barrel) { return; }
+	if (!Turret) { return; }
 	
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
@@ -48,13 +51,20 @@ void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
 		StartLocation,
 		HitLocation,
 		LaunchSpeed,
-		// false,
-		// 6.f,
-		// 0.f,
-		ESuggestProjVelocityTraceOption::DoNotTrace
+		false,
+		6.f,
+		0.f,
+		ESuggestProjVelocityTraceOption::DoNotTrace // Parameter must be present to prevent bug
 	)){ 
-	auto AimVector = OutLaunchVelocity.GetSafeNormal();
-	MoveBarrel(AimVector);
+		AimVector = OutLaunchVelocity.GetSafeNormal();
+		
+		// auto Time = GetWorld()->GetTimeSeconds();
+		// UE_LOG(LogTemp, Warning, TEXT("Found Solution! %f."), Time)
+	}
+	else {
+		// auto Time = GetWorld()->GetTimeSeconds();
+		// UE_LOG(LogTemp, Warning, TEXT("Solution Failed: %f."), Time)
+
 	}
 	return;
 }
@@ -65,14 +75,25 @@ void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
 	return;
 }
 
-void UTankAimingComponent::MoveBarrel(FVector AimVector)
+void UTankAimingComponent::SetTurretReference(UTurret * TurretToSet)
+{
+	Turret = TurretToSet;
+	return;
+}
+
+void UTankAimingComponent::SetAim(FVector AimVector)
 {
 	// Getcurrent Barrel rotation and also Translate SafeVector to worldrotation
 	auto BarrelRotation = Barrel->GetForwardVector().Rotation();
-	auto AimAsRotator = AimVector.Rotation();
-	auto DeltaRotator = AimAsRotator - BarrelRotation;
+	auto TurretRotation = Turret->GetForwardVector().Rotation();
+	auto AimRotator = AimVector.Rotation();
+	auto BarrelDeltaRotator = AimRotator - BarrelRotation;
+	auto TurretDeltaRotator = AimRotator - TurretRotation;
 
-	Barrel->Elevate(5.f);
+	Barrel->Elevate(BarrelDeltaRotator.Pitch);
+	Turret->Rotate(TurretDeltaRotator.Yaw);
+
+	UE_LOG(LogTemp, Warning, TEXT("Aim Rotation %s"), *AimRotator.ToString())
 
 	return;
 }

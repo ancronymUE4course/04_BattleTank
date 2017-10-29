@@ -3,12 +3,18 @@
 
 #include "TankBarrel.h"
 #include "Engine/World.h"
+#include "Math/UnrealMathUtility.h"
 
 
 
 void UTankBarrel::Elevate(float RelativeSpeed)
 {
-	auto Time = GetWorld()->GetTimeSeconds();
-	UE_LOG(LogTemp, Warning, TEXT("Barrel Elevate called at time: %f."), Time)
+	// UE_LOG(LogTemp, Warning, TEXT("Elevate called"))
+	auto Speed = FMath::Clamp(RelativeSpeed, -1.f,1.f);
+	auto ElevationChange = Speed * MaxDegreesPerSecond * GetWorld()->DeltaTimeSeconds;
+	auto RawNewElevation = RelativeRotation.Pitch + ElevationChange;	
+	
+	auto Elevation = FMath::Clamp(RawNewElevation, MinAngle, MaxAngle);
+	SetRelativeRotation(FRotator(Elevation, 0, 0));
 	return;
 }

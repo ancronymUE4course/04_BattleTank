@@ -19,7 +19,7 @@ public:
 	
 private:
 	UPROPERTY(EditAnywhere, category = BarrelSettings)
-	float MaxDegreesPerSecond = 20.f;
+	float MaxDegreesPerSecond = 5.f;
 
 	UPROPERTY(EditAnywhere, category = BarrelSettings)
 	float MinAngle = -3.f;
