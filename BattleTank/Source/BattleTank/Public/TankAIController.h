@@ -19,10 +19,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void LogTankName() const;	
-	void LogPlayerTankName() const;
-	
-	ATank* GetControlledTank() const;
-	ATank* GetPlayerTank() const;
 	bool AimAtPlayer() const;
+
+	ATank* ControlledTank = nullptr;
+	ATank* PlayerTank = nullptr;
 };

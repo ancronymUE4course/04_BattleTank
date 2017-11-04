@@ -6,10 +6,8 @@
 
 // I ROCK FOR WRITING THIS!!!
 void UTurret::Rotate(float RelativeSpeed){
-	// UE_LOG(LogTemp, Warning, TEXT("Rotate called"))
 	auto Speed = FMath::Clamp(RelativeSpeed, -1.f, 1.f);
 
-	UE_LOG(LogTemp, Warning, TEXT("Relative Speed = %f"), RelativeSpeed)
 	if (RelativeSpeed <= 180.f && RelativeSpeed >= -180.f) { 
 		auto DirectionChange = Speed * MaxDegreesPerSecond * GetWorld()->DeltaTimeSeconds;
 		auto RawNewYaw = RelativeRotation.Yaw + DirectionChange;

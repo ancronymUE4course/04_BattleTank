@@ -6,7 +6,7 @@
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("PlayerController BeginPlay check."));
+	//UE_LOG(LogTemp, Warning, TEXT("PlayerController BeginPlay check."));
 	LogTankName();
 }
 

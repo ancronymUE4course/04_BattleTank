@@ -2,8 +2,12 @@
 
 #include "Tank.h"
 #include "TankAimingComponent.h"
+#include "TankMovementComponent.h"
 #include "TankBarrel.h"
 #include "Turret.h"
+#include "TankTrack.h"
+#include "Projectile.h"
+#include "Engine/World.h"
 
 // Sets default values
 ATank::ATank()
@@ -18,6 +22,7 @@ ATank::ATank()
 void ATank::SetBarrelReference(UTankBarrel * BarrelToSet)
 {
 	TankAimingComponent->SetBarrelReference(BarrelToSet);
+	Barrel = BarrelToSet;
 	return;
 }
 
@@ -26,6 +31,7 @@ void ATank::SetTurretReference(UTurret * TurretToSet)
 	TankAimingComponent->SetTurretReference(TurretToSet);
 	return;
 }
+
 
 // Called when the game starts or when spawned
 void ATank::BeginPlay()
@@ -46,3 +52,21 @@ void ATank::AimAt(FVector HitLocation) {
 	return;
 }
 
+void ATank::Fire()
+{
+	// FPlatformTime is not really documented and even the tech does not know what it is, but it is good to use
+	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
+	if (Barrel && isReloaded) { 
+		// spawn projectile at socket location
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint, 
+			Barrel->GetSocketLocation(FName("Projectile")), 
+			Barrel->GetSocketRotation(FName("Projectile"))
+			);
+
+		Projectile->LaunchProjectile(LaunchSpeed);
+		LastFireTime = FPlatformTime::Seconds();
+	}
+
+	return;
+}

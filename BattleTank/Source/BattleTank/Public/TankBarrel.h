@@ -18,13 +18,13 @@ public:
 	void Elevate(float RelativeSpeed);
 	
 private:
-	UPROPERTY(EditAnywhere, category = BarrelSettings)
+	UPROPERTY(EditDefaultsOnly, category = BarrelSettings)
 	float MaxDegreesPerSecond = 5.f;
 
-	UPROPERTY(EditAnywhere, category = BarrelSettings)
+	UPROPERTY(EditDefaultsOnly, category = BarrelSettings)
 	float MinAngle = -3.f;
 	
-	UPROPERTY(EditAnywhere, category = BarrelSettings)
+	UPROPERTY(EditDefaultsOnly, category = BarrelSettings)
 	float MaxAngle = 15.f;
 	
 	
