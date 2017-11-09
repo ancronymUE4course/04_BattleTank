@@ -4,7 +4,7 @@
 #include "TankTrack.h"
 
 void UTankMovementComponent::Initialise(UTankTrack* LeftTrackToSet, UTankTrack* RightTrackToSet) {
-	if (!LeftTrackToSet || !RightTrackToSet) { return; }
+	
 	LeftTrack = LeftTrackToSet;
 	RightTrack = RightTrackToSet;
 
@@ -12,11 +12,62 @@ void UTankMovementComponent::Initialise(UTankTrack* LeftTrackToSet, UTankTrack* 
 }
 
 void UTankMovementComponent::IntendMoveForward(float Throw) {
-	UE_LOG(LogTemp, Warning, TEXT("Intended forward movement: %f."), Throw)
-
+	
+	if (!LeftTrack || !RightTrack) { return; }
 	LeftTrack->SetThrottle(Throw);
 	RightTrack->SetThrottle(Throw);
 	
 	return;
 }
+
+void UTankMovementComponent::IntendTurn(float Throw) {
+	if (!LeftTrack || !RightTrack) { return; }
+
+	// auto TankName = GetOwner()->GetName();
+	// UE_LOG(LogTemp, Warning, TEXT("%s Turn Throw: %f"),*TankName,Throw)
+
+	LeftTrack->SetThrottle(Throw);
+	RightTrack->SetThrottle(-Throw);
+
+	return;
+}
+
+void UTankMovementComponent::RequestDirectMove(const FVector & MoveVelocity, bool bForceMaxSpeed)
+{
+	auto TankName = GetOwner()->GetName();
+	
+	// No need to call super, as we replace functionality of parent
+
+	auto TankForward = GetOwner()->GetActorForwardVector().GetSafeNormal();
+	auto AIForwardIntention = MoveVelocity.GetSafeNormal();
+
+	IntendMoveForward(FVector::DotProduct(AIForwardIntention, TankForward));
+	
+	float TurnThrow = FVector::CrossProduct(TankForward, AIForwardIntention).Z;
+
+	UE_LOG(LogTemp, Warning, TEXT("%s Turn Throw: %f"), *TankName, TurnThrow)
+
+	IntendTurn(TurnThrow);
+
+	
+	
+
+
+	return;
+}
+
+void UTankMovementComponent::ResetTank() {
+
+	float CurrentYaw = GetOwner()->GetActorRotation().Yaw;
+	FRotator NewRotation = FRotator(0.f, CurrentYaw, 0.f);	
+	GetOwner()->SetActorRotation(NewRotation);
+
+	FVector CurrentLocation = GetOwner()->GetActorLocation();
+	FVector NewLocation = FVector(CurrentLocation.X, CurrentLocation.Y, CurrentLocation.Z + 100.f);
+	GetOwner()->SetActorLocation(NewLocation);
+	
+	return;
+}
+
+
 
