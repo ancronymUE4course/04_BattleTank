@@ -8,6 +8,7 @@
 #include "TankPlayerController.generated.h" // MUST BE THE LAST INCLUDE!!!
 
 class ATank;
+class UTankAimingComponent;
 
 UCLASS()
 class BATTLETANK_API ATankPlayerController : public APlayerController
@@ -15,10 +16,16 @@ class BATTLETANK_API ATankPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
-	ATank* GetControlledTank() const;
 	
 	virtual void BeginPlay() override; // Oehh, saaks aru siis. Aga override checkib vist üles pärimusteed pidi.
 	virtual void Tick(float DeltaTime) override;
+
+protected:
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	ATank* GetControlledTank() const;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
+	void FoundAimingComponent(UTankAimingComponent* AimingCompRef);
 	
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -29,8 +36,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float CrossHairLocationY = 0.3333333f;
-
-	void LogTankName();
 
 	// Move the tank barrel, so that a shot would hit the crosshair intersect with world
 	void AimTowardsCrosshair();

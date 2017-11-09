@@ -3,6 +3,7 @@
 #include "TankAIController.h"
 #include "Tank.h"
 #include "Engine/World.h"
+// Depends on the movement component via pathfinding system
 
 void ATankAIController::BeginPlay()
 {
@@ -21,7 +22,7 @@ void ATankAIController::Tick(float DeltaTime)
 	PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ControlledTank = Cast<ATank>(GetPawn());
 
-	if (PlayerTank && ControlledTank){
+	if (ensure(PlayerTank && ControlledTank)){
 	AimAtPlayer();	
 	ControlledTank->Fire();
 	}
@@ -31,7 +32,7 @@ void ATankAIController::Tick(float DeltaTime)
 
 bool ATankAIController::AimAtPlayer() const
 {
-	if (PlayerTank && ControlledTank) { 
+	if (ensure(PlayerTank && ControlledTank)) { 
 		FVector AimPoint = PlayerTank->GetTransform().GetTranslation();
 		ControlledTank->AimAt(AimPoint);
 		return true;

@@ -24,5 +24,5 @@ private:
 	ATank* ControlledTank = nullptr;
 	ATank* PlayerTank = nullptr;
 
-	float AcceptanceRadius = 200.f; // How close does AI move to player
+	float AcceptanceRadius = 2000.f; // How close does AI move to player
 };

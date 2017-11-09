@@ -8,6 +8,13 @@
 #include "Engine/World.h"
 
 
+void UTankAimingComponent::InitialiseAiming(UTankBarrel* BarrelToSet, UTurret* TurretToSet) {
+	Barrel = BarrelToSet;
+	Turret = TurretToSet;
+	UE_LOG(LogTemp, Warning, TEXT("Barrel and turret set in Aimingcomp"))
+	return;
+}
+
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
 {
@@ -17,7 +24,6 @@ UTankAimingComponent::UTankAimingComponent()
 
 	// ...
 }
-
 
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
@@ -36,24 +42,10 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	
 }
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
-{
-	if (!BarrelToSet) { return; }
-	Barrel = BarrelToSet;
-	return;
-}
-
-void UTankAimingComponent::SetTurretReference(UTurret * TurretToSet)
-{
-	if (!TurretToSet) { return; }
-	Turret = TurretToSet;
-	return;
-}
-
 void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
 {
-	if (!Barrel) { return; }
-	if (!Turret) { return; }
+	if (!ensure(Barrel)) { return; }
+	if (!ensure(Turret)) { return; }
 	
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
@@ -73,7 +65,7 @@ void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
 		auto AimVector = OutLaunchVelocity.GetSafeNormal();
 		SetAim(AimVector);
 		// auto Time = GetWorld()->GetTimeSeconds();
-		// UE_LOG(LogTemp, Warning, TEXT("Found Solution! %f."), Time)
+		
 	}
 	else {
 		// auto Time = GetWorld()->GetTimeSeconds();
@@ -84,15 +76,18 @@ void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
 }
 
 
-
 void UTankAimingComponent::SetAim(FVector AimVector)
 {
+	if (!ensure(Barrel)) { return; }
+	if (!ensure(Turret)) { return; }
 	// Getcurrent Barrel rotation and also Translate SafeVector to worldrotation
 	auto BarrelRotation = Barrel->GetForwardVector().Rotation();
 	auto TurretRotation = Turret->GetForwardVector().Rotation();
 	auto AimRotator = AimVector.Rotation();
 	auto BarrelDeltaRotator = AimRotator - BarrelRotation;
 	auto TurretDeltaRotator = AimRotator - TurretRotation;
+
+	// if (BarrelDeltaRotator.Pitch < 0.1f || TurretDeltaRotator.Yaw < 0.1f) { FiringStatus = EFiringStatus::Locked; }
 
 	Barrel->Elevate(BarrelDeltaRotator.Pitch);
 	Turret->Rotate(TurretDeltaRotator.Yaw);

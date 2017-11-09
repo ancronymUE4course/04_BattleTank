@@ -15,11 +15,11 @@ class BATTLETANK_API UTankTrack : public UStaticMeshComponent
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BluePrintCallable, Category = Input)
+	UFUNCTION(BluePrintCallable, Category = "Input")
 	void SetThrottle(float Throttle);
 	
-	UPROPERTY(EditDefaultsOnly, Category = Driving)
-	float TrackMaxForce = 20000000.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Driving")
+	float TrackMaxForce = 15000000.f;
 	
 	
 };

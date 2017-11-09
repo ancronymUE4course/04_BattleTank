@@ -18,7 +18,7 @@ public:
 	void Rotate(float RelativeSpeed);
 
 private:
-	UPROPERTY(EditDefaultsOnly, category = BarrelSettings)
+	UPROPERTY(EditDefaultsOnly, Category = "BarrelSettings")
 	float MaxDegreesPerSecond = 45.f;
 	
 	

@@ -9,6 +9,14 @@
 class UTankBarrel; // Forward declaration, we can define more than one class in a header file ... wut
 class UTurret;
 
+// Enum for aiming class
+UENUM()
+enum class EFiringStatus : uint8{
+	Reloading,
+	Aiming,
+	Locked
+};
+
 // Holds parameters for Barrels properties and Elevate Method
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANK_API UTankAimingComponent : public UActorComponent
@@ -19,21 +27,24 @@ public:
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	void InitialiseAiming(UTankBarrel* BarrelToSet, UTurret* TurretToSet);
 
-public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void AimForFire(FVector HitLocation, float LaunchSpeed);
 
-	void SetBarrelReference(UTankBarrel* BarrelToSet);
-	void SetTurretReference(UTurret* TurretToSet);
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	EFiringStatus FiringStatus = EFiringStatus::Locked;
 
 private:
 	UTankBarrel* Barrel = nullptr;
 	UTurret* Turret = nullptr;
+
 	void SetAim(FVector AimVector);
 
 	// FVector AimVector;
