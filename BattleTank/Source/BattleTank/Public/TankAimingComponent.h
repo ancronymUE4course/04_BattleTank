@@ -29,29 +29,34 @@ public:
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
+	//called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void InitialiseAiming(UTankBarrel* BarrelToSet, UTurret* TurretToSet);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void Fire();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void AimForFire(FVector HitLocation);
+	bool IsBarrelMoving() const;
+
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	EFiringStatus FiringStatus = EFiringStatus::Reloading;
 
 protected:
 	// Called when the game starts
-	virtual void BeginPlay() override;
-
-	UPROPERTY(BlueprintReadOnly, Category = "State")
-	EFiringStatus FiringStatus = EFiringStatus::Locked;
+	virtual void BeginPlay() override;	
 
 private:
 	UTankBarrel* Barrel = nullptr;
 	UTurret* Turret = nullptr;
 
-	void SetAim(FVector AimVector);
-	
+	void SetAim(FVector AimVector);	
+
+	FVector CurrentAimVector;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	// UClass* ProjectileBlueprint; // Alternative in the lecture slides
 	TSubclassOf<AProjectile> ProjectileBlueprint;
@@ -65,6 +70,5 @@ private:
 
 	double LastFireTime = 0;
 
-	// FVector AimVector;
 	
 };

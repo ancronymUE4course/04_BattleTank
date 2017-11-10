@@ -6,13 +6,13 @@
 #include "Projectile.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Math/Vector.h"
 #include "Engine/World.h"
 
 
 void UTankAimingComponent::InitialiseAiming(UTankBarrel* BarrelToSet, UTurret* TurretToSet) {
 	Barrel = BarrelToSet;
 	Turret = TurretToSet;
-	UE_LOG(LogTemp, Warning, TEXT("Barrel and turret set in Aimingcomp"))
 	return;
 }
 
@@ -21,9 +21,29 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
-
+	PrimaryComponentTick.bCanEverTick = true;
+	UE_LOG(LogTemp, Warning, TEXT("Construct called."))
 	// ...
+}
+
+// Called every frame
+void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	// UE_LOG(LogTemp, Warning, TEXT("Aim ticking"))
+
+	if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTime)
+	{
+		FiringStatus = EFiringStatus::Reloading;
+	}
+	else if (IsBarrelMoving())
+	{
+		FiringStatus = EFiringStatus::Aiming;
+	}
+	else
+	{
+		FiringStatus = EFiringStatus::Locked;
+	}	
 }
 
 // Called when the game starts
@@ -31,16 +51,9 @@ void UTankAimingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
-}
-
-// Called every frame
-void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	// ...
-	
+	// So that first fire is after initial reload
+	LastFireTime = FPlatformTime::Seconds();
+	// ...	
 }
 
 void UTankAimingComponent::AimForFire(FVector HitLocation)
@@ -76,9 +89,19 @@ void UTankAimingComponent::AimForFire(FVector HitLocation)
 	return;
 }
 
+bool UTankAimingComponent::IsBarrelMoving() const {
+	if (!ensure(Barrel)) { return false; }
+	auto BarrelVector = Barrel->GetForwardVector();
+
+	// FVector::Equals - this turns into the below statement
+	return !BarrelVector.Equals(CurrentAimVector, 0.05f);
+}
 
 void UTankAimingComponent::SetAim(FVector AimVector)
 {
+	CurrentAimVector = AimVector;
+	// FPlatformTime is not really documented and even the tech does not know what it is, but it is good to use
+	
 	if (!ensure(Barrel)) { return; }
 	if (!ensure(Turret)) { return; }
 	// Getcurrent Barrel rotation and also Translate SafeVector to worldrotation
@@ -87,8 +110,9 @@ void UTankAimingComponent::SetAim(FVector AimVector)
 	auto AimRotator = AimVector.Rotation();
 	auto BarrelDeltaRotator = AimRotator - BarrelRotation;
 	auto TurretDeltaRotator = AimRotator - TurretRotation;
-
-	// if (BarrelDeltaRotator.Pitch < 0.1f || TurretDeltaRotator.Yaw < 0.1f) { FiringStatus = EFiringStatus::Locked; }
+	
+	/*if (BarrelDeltaRotator.Pitch < 0.2f || TurretDeltaRotator.Yaw < 0.2f) { BarrelIsMoving = false; }
+	if (BarrelDeltaRotator.Pitch > 0.2f || TurretDeltaRotator.Yaw > 0.2f) { BarrelIsMoving = true; }*/
 
 	Barrel->Elevate(BarrelDeltaRotator.Pitch);
 	Turret->Rotate(TurretDeltaRotator.Yaw);
@@ -98,13 +122,11 @@ void UTankAimingComponent::SetAim(FVector AimVector)
 
 void UTankAimingComponent::Fire()
 {
-	// FPlatformTime is not really documented and even the tech does not know what it is, but it is good to use
-	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
 	if (!ensure(Barrel)) { return; }
 	if (!ensure(ProjectileBlueprint)) { return; }
 
 	// spawn projectile at socket location
-	if (isReloaded) {
+	if (FiringStatus != EFiringStatus::Reloading) {
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			ProjectileBlueprint,
 			Barrel->GetSocketLocation(FName("Projectile")),
