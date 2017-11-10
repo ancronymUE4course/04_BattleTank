@@ -2,13 +2,12 @@
 
 #include "TankPlayerController.h"
 #include "TankAimingComponent.h"
-#include "Tank.h"
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	//UE_LOG(LogTemp, Warning, TEXT("PlayerController BeginPlay check."));
-	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (ensure(AimingComponent)){ FoundAimingComponent(AimingComponent); }
 	else {UE_LOG(LogTemp, Warning, TEXT("PC cant find AC at BeginPlay")) }
 }
@@ -21,21 +20,16 @@ void ATankPlayerController::Tick(float DeltaTime)
 	AimTowardsCrosshair();
 }
 
-ATank* ATankPlayerController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-}
-
 void ATankPlayerController::AimTowardsCrosshair() {
-	if(!ensure(GetControlledTank())) { return; }
+	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	if(!ensure(AimingComponent)) { return; }
 	FVector OutHitLocation;
 
 	// get world location through crosshair with linetrace
 	if (GetSightRayHitLocation(OutHitLocation))
 	{
-		GetControlledTank()->AimAt(OutHitLocation);
-		auto OutHit = OutHitLocation.ToString();
-		// UE_LOG(LogTemp, Warning, TEXT(" From TPC to Tank %s."), *OutHit)
+		
+		AimingComponent->AimForFire(OutHitLocation);
 	}
 	// if hits landscape
 		// tell controlled tank to aim at this point

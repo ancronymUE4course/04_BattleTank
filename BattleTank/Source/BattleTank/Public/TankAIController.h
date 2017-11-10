@@ -7,7 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "TankAIController.generated.h"
 
-class ATank;
+class UTankAimingComponent;
 
 UCLASS()
 class BATTLETANK_API ATankAIController : public AAIController
@@ -21,8 +21,8 @@ public:
 private:
 	bool AimAtPlayer() const;
 
-	ATank* ControlledTank = nullptr;
-	ATank* PlayerTank = nullptr;
+	APawn* ControlledTank = nullptr;
+	APawn* PlayerTank = nullptr;
 
 	float AcceptanceRadius = 2000.f; // How close does AI move to player
 };

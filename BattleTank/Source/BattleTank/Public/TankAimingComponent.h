@@ -9,6 +9,8 @@
 class UTankBarrel; // Forward declaration, we can define more than one class in a header file ... wut
 class UTurret;
 
+class AProjectile;
+
 // Enum for aiming class
 UENUM()
 enum class EFiringStatus : uint8{
@@ -30,9 +32,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void InitialiseAiming(UTankBarrel* BarrelToSet, UTurret* TurretToSet);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Fire();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void AimForFire(FVector HitLocation, float LaunchSpeed);
+	void AimForFire(FVector HitLocation);
 
 protected:
 	// Called when the game starts
@@ -46,6 +51,19 @@ private:
 	UTurret* Turret = nullptr;
 
 	void SetAim(FVector AimVector);
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	// UClass* ProjectileBlueprint; // Alternative in the lecture slides
+	TSubclassOf<AProjectile> ProjectileBlueprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	float LaunchSpeed = 10000.f; //TODO find sensible value
+	
+	// EditDefaultsOnly - enables value editing only for the archetype e.g in BP only, not whilst running
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	float ReloadTime = 5;
+
+	double LastFireTime = 0;
 
 	// FVector AimVector;
 	

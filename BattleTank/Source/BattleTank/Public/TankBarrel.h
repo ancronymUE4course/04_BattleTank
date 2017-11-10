@@ -25,7 +25,7 @@ private:
 	float MinAngle = -3.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "BarrelSettings")
-	float MaxAngle = 15.f;
+	float MaxAngle = 35.f;
 	
 	
 };

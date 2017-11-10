@@ -30,6 +30,7 @@ void AProjectile::Tick(float DeltaTime)
 void AProjectile::LaunchProjectile(float LaunchSpeed) {
 	UE_LOG(LogTemp, Warning, TEXT("Fire Pressed"))
 	
+	if (!ensure(ProjectileMovementComponent)) { return; }
 	ProjectileMovementComponent->SetVelocityInLocalSpace(FVector::ForwardVector * LaunchSpeed);
 	ProjectileMovementComponent->Activate();
 	return;

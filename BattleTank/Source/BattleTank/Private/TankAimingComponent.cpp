@@ -3,6 +3,7 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "Turret.h"
+#include "Projectile.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -42,7 +43,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	
 }
 
-void UTankAimingComponent::AimForFire(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimForFire(FVector HitLocation)
 {
 	if (!ensure(Barrel)) { return; }
 	if (!ensure(Turret)) { return; }
@@ -92,6 +93,27 @@ void UTankAimingComponent::SetAim(FVector AimVector)
 	Barrel->Elevate(BarrelDeltaRotator.Pitch);
 	Turret->Rotate(TurretDeltaRotator.Yaw);
 
+	return;
+}
+
+void UTankAimingComponent::Fire()
+{
+	// FPlatformTime is not really documented and even the tech does not know what it is, but it is good to use
+	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
+	if (!ensure(Barrel)) { return; }
+	if (!ensure(ProjectileBlueprint)) { return; }
+
+	// spawn projectile at socket location
+	if (isReloaded) {
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint,
+			Barrel->GetSocketLocation(FName("Projectile")),
+			Barrel->GetSocketRotation(FName("Projectile"))
+			);
+
+		Projectile->LaunchProjectile(LaunchSpeed);
+		LastFireTime = FPlatformTime::Seconds();
+	}
 	return;
 }
 
