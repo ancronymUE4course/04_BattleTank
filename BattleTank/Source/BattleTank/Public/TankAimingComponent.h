@@ -41,13 +41,15 @@ public:
 
 	void AimForFire(FVector HitLocation);
 	bool IsBarrelMoving() const;
-
-	UPROPERTY(BlueprintReadOnly, Category = "State")
-	EFiringStatus FiringStatus = EFiringStatus::Reloading;
+	
+	EFiringStatus GetFiringStatus() const;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;	
+
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	EFiringStatus FiringStatus = EFiringStatus::Reloading;
 
 private:
 	UTankBarrel* Barrel = nullptr;

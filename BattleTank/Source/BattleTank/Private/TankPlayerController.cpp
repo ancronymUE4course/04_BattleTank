@@ -21,14 +21,14 @@ void ATankPlayerController::Tick(float DeltaTime)
 }
 
 void ATankPlayerController::AimTowardsCrosshair() {
+	if (!GetPawn()) { return; }
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if(!ensure(AimingComponent)) { return; }
 	FVector OutHitLocation;
 
 	// get world location through crosshair with linetrace
 	if (GetSightRayHitLocation(OutHitLocation))
-	{
-		
+	{		
 		AimingComponent->AimForFire(OutHitLocation);
 	}
 	// if hits landscape
@@ -48,11 +48,11 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& OutHitLocation) cons
 	FVector LookDirection;
 	
 	if (GetLookDirection(ScreenLocation, LookDirection)) {
-		//UE_LOG(LogTemp, Warning, TEXT("WorldDirection: %s"), *LookDirection.ToString())
+		return GetLookVectorHitLocation(LookDirection, OutHitLocation);
 	};
 		
 	// linetrace along that look direction and see what we hit
-	return GetLookVectorHitLocation(LookDirection, OutHitLocation);
+	return false;
 }
 
 bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& OutHitLocation) const
