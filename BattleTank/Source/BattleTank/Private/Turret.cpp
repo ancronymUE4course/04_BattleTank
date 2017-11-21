@@ -10,6 +10,11 @@ void UTurret::Rotate(float RelativeSpeed){
 
 	// UE_LOG(LogTemp, Warning, TEXT("Rotate called: %f"), RelativeSpeed)
 
+	/* 
+	This is my fix for the situation, another way would be to use FMath::Abs in the aiming component before passing
+	in the RelativeSpeed value
+	*/
+
 	if (RelativeSpeed <= 180.f && RelativeSpeed >= -180.f) { 
 		auto DirectionChange = Speed * MaxDegreesPerSecond * GetWorld()->DeltaTimeSeconds;
 		auto RawNewYaw = RelativeRotation.Yaw + DirectionChange;

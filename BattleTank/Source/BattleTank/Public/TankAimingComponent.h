@@ -16,7 +16,8 @@ UENUM()
 enum class EFiringStatus : uint8{
 	Reloading,
 	Aiming,
-	Locked
+	Locked,
+	OutOfAmmo
 };
 
 // Holds parameters for Barrels properties and Elevate Method
@@ -31,13 +32,15 @@ public:
 
 	//called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void InitialiseAiming(UTankBarrel* BarrelToSet, UTurret* TurretToSet);
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
+	UFUNCTION(BlueprintCallable, Category = "Firing")
 	void Fire();
+
+	UFUNCTION(BlueprintCallable, Category = "Firing")
+	int32 GetAmmoCount() const;
 
 	void AimForFire(FVector HitLocation);
 	bool IsBarrelMoving() const;
@@ -46,7 +49,9 @@ public:
 
 protected:
 	// Called when the game starts
-	virtual void BeginPlay() override;	
+	virtual void BeginPlay() override;
+
+	int32 AmmoCount = 5;
 
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	EFiringStatus FiringStatus = EFiringStatus::Reloading;
@@ -64,7 +69,7 @@ private:
 	TSubclassOf<AProjectile> ProjectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-	float LaunchSpeed = 10000.f; //TODO find sensible value
+	float LaunchSpeed = 8000.f; //TODO find sensible value
 	
 	// EditDefaultsOnly - enables value editing only for the archetype e.g in BP only, not whilst running
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")

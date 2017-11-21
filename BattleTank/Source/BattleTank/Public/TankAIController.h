@@ -18,11 +18,16 @@ public:
 	virtual void BeginPlay() override; // Oehh, saaks aru siis. Aga override checkib vist üles pärimusteed pidi.
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	// BP is children of this cpp class, so the children can read it!
+	UPROPERTY(EditAnywhere, Category = "Setup") // Consider EditDefaultsOnly
+	float AcceptanceRadius = 2000.f; // How close does AI move to player
+
 private:
 	bool AimAtPlayer() const;
 
 	APawn* ControlledTank = nullptr;
 	APawn* PlayerTank = nullptr;
 
-	float AcceptanceRadius = 2000.f; // How close does AI move to player
+	
 };

@@ -31,22 +31,18 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	// UE_LOG(LogTemp, Warning, TEXT("Aim ticking"))
 
-	if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTime)
-	{
-		FiringStatus = EFiringStatus::Reloading;
-	}
-	else if (IsBarrelMoving())
-	{
-		FiringStatus = EFiringStatus::Aiming;
-	}
-	else
-	{
-		FiringStatus = EFiringStatus::Locked;
-	}	
+	if (AmmoCount <= 0)												{	FiringStatus = EFiringStatus::OutOfAmmo; }
+	else if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTime){	FiringStatus = EFiringStatus::Reloading;}
+	else if (IsBarrelMoving())										{	FiringStatus = EFiringStatus::Aiming;	}
+	else															{	FiringStatus = EFiringStatus::Locked;	}	
 }
 
 EFiringStatus UTankAimingComponent::GetFiringStatus() const {
 	return FiringStatus;
+}
+
+int32 UTankAimingComponent::GetAmmoCount() const{
+	return AmmoCount;
 }
 
 // Called when the game starts
@@ -125,11 +121,12 @@ void UTankAimingComponent::SetAim(FVector AimVector)
 
 void UTankAimingComponent::Fire()
 {
+	if (AmmoCount == 0)  { return; }
 	if (!ensure(Barrel)) { return; }
 	if (!ensure(ProjectileBlueprint)) { return; }
 
 	// spawn projectile at socket location
-	if (FiringStatus != EFiringStatus::Reloading) {
+	if (FiringStatus == EFiringStatus::Locked || FiringStatus == EFiringStatus::Aiming) {
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			ProjectileBlueprint,
 			Barrel->GetSocketLocation(FName("Projectile")),
@@ -138,7 +135,9 @@ void UTankAimingComponent::Fire()
 
 		Projectile->LaunchProjectile(LaunchSpeed);
 		LastFireTime = FPlatformTime::Seconds();
+		AmmoCount--;
 	}
+	
 	return;
 }
 
