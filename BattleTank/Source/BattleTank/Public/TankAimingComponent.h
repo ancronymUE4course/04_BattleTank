@@ -51,7 +51,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	int32 AmmoCount = 5;
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	int32 AmmoCount = 100;
 
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	EFiringStatus FiringStatus = EFiringStatus::Reloading;
@@ -73,7 +74,7 @@ private:
 	
 	// EditDefaultsOnly - enables value editing only for the archetype e.g in BP only, not whilst running
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-	float ReloadTime = 5;
+	float ReloadTime = 1;	
 
 	double LastFireTime = 0;
 
