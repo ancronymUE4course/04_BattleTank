@@ -37,15 +37,13 @@ float ATank::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AC
 	CurrentHealth -= DamageToApply;
 	UE_LOG(LogTemp, Warning, TEXT("Dam amount: %d and Dam applied: %d and Health: %d"), DamagePoints, DamageToApply,CurrentHealth);
 
-	return DamageToApply;
-
-	//if (CurrentHealth <= 0) { Death(); }
+	if (CurrentHealth <= 0) { Death(); }
+	return DamageToApply;	
 }
 
 void ATank::Death() {
-	DeathBlast->Activate();
-	
-	
+	UE_LOG(LogTemp,Warning,TEXT("Death called."))
+	OnDeath.Broadcast();	
 }
 
 float ATank::GetHealthPercent() const

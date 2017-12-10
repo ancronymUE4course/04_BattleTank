@@ -2,6 +2,7 @@
 
 #include "TankPlayerController.h"
 #include "TankAimingComponent.h"
+#include "Tank.h"
 
 void ATankPlayerController::BeginPlay()
 {
@@ -12,12 +13,29 @@ void ATankPlayerController::BeginPlay()
 	else {UE_LOG(LogTemp, Warning, TEXT("PC cant find AC at BeginPlay")) }
 }
 
+void ATankPlayerController::SetPawn(APawn * InPawn)
+{
+	Super::SetPawn(InPawn);
+	if (InPawn) {
+		auto PossessedTank = Cast<ATank>(InPawn);
+		if (!ensure(PossessedTank)) { return; }
+
+		// Subscribe to the tanks death event
+		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankPlayerController::OnPlayerDeath);
+	}
+}
+
 // Tick
 void ATankPlayerController::Tick(float DeltaTime)
 {
 	// Super
 	Super::Tick(DeltaTime);
 	AimTowardsCrosshair();
+}
+
+void ATankPlayerController::OnPlayerDeath()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Player died!"))
 }
 
 void ATankPlayerController::AimTowardsCrosshair() {

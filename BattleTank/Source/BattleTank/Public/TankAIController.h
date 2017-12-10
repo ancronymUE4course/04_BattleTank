@@ -9,6 +9,8 @@
 
 class UTankAimingComponent;
 
+
+
 UCLASS()
 class BATTLETANK_API ATankAIController : public AAIController
 {
@@ -17,6 +19,8 @@ class BATTLETANK_API ATankAIController : public AAIController
 public:
 	virtual void BeginPlay() override; // Oehh, saaks aru siis. Aga override checkib vist üles pärimusteed pidi.
 	virtual void Tick(float DeltaTime) override;
+
+	
 
 protected:
 	// BP is children of this cpp class, so the children can read it!
@@ -29,5 +33,11 @@ private:
 	APawn* ControlledTank = nullptr;
 	APawn* PlayerTank = nullptr;
 
+	// This gets called when the pawn is posessed
+	virtual void SetPawn(APawn* InPawn) override;
+
+	// nothing from the outside accesses it
+	UFUNCTION()
+	void DeathProcedure();
 	
 };

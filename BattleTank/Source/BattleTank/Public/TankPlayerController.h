@@ -24,6 +24,12 @@ protected:
 	void FoundAimingComponent(UTankAimingComponent* AimingCompRef);
 	
 private:
+	// This gets called when the pawn is posessed
+	virtual void SetPawn(APawn* InPawn) override;
+
+	UFUNCTION()
+	void OnPlayerDeath();
+
 	UPROPERTY(EditDefaultsOnly)
 	float LineTraceRange = 1000000.f;
 

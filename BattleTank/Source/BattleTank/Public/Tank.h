@@ -8,10 +8,11 @@
 
 // Forward declarations
 
-
 class UParticleSystemComponent;
 class UTankAimingComponent;
 class UTankMovementComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTankDeathDelegate);
 
 UCLASS()
 class BATTLETANK_API ATank : public APawn
@@ -26,6 +27,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 	float GetHealthPercent() const;
 
+	// Public, because another class will need access to it
+	FTankDeathDelegate OnDeath;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;	
@@ -34,7 +38,7 @@ private:
 	// Sets default values for this pawn's properties
 	ATank();
 
-	void Death();
+	void Death();	
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	int32 StartingHealth = 100;

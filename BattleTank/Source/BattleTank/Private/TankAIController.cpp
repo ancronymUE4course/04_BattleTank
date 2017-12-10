@@ -3,6 +3,7 @@
 #include "TankAIController.h"
 #include "TankAimingComponent.h"
 #include "Engine/World.h"
+#include "Tank.h"
 // Depends on the movement component via pathfinding system
 
 void ATankAIController::BeginPlay()
@@ -13,6 +14,18 @@ void ATankAIController::BeginPlay()
 	// if(ControlledTank){ UE_LOG(LogTemp, Warning, TEXT("Own Tank found.")); }
 	
 	// if (PlayerTank) { UE_LOG(LogTemp, Warning, TEXT("Player found.")); }
+}
+
+void ATankAIController::SetPawn(APawn * InPawn)
+{
+	Super::SetPawn(InPawn);
+	if (InPawn) {
+		auto PossessedTank = Cast<ATank>(InPawn);
+		if (!ensure(PossessedTank)) { return; }
+		
+		// Subscribe to the tanks death event
+		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankAIController::DeathProcedure);
+	}
 }
 
 void ATankAIController::Tick(float DeltaTime)
@@ -34,6 +47,11 @@ void ATankAIController::Tick(float DeltaTime)
 	MoveToActor(PlayerTank, AcceptanceRadius);
 }
 
+void ATankAIController::DeathProcedure()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Death aknowledged!"))
+}
+
 bool ATankAIController::AimAtPlayer() const
 {
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
@@ -49,3 +67,4 @@ bool ATankAIController::AimAtPlayer() const
 	*/
 	return false;
 }
+
