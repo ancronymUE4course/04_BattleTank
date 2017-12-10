@@ -33,9 +33,10 @@ void ATankPlayerController::Tick(float DeltaTime)
 	AimTowardsCrosshair();
 }
 
+// You do need a one line method, because of delegate. It would not work without it.
 void ATankPlayerController::OnPlayerDeath()
-{
-	UE_LOG(LogTemp,Warning,TEXT("Player died!"))
+{	
+	StartSpectatingOnly();
 }
 
 void ATankPlayerController::AimTowardsCrosshair() {
@@ -84,7 +85,7 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
 		OutHit,
 		ViewLocation,
 		LineTraceEnd,
-		ECollisionChannel::ECC_Visibility
+		ECollisionChannel::ECC_Camera
 	)){
 		OutHitLocation = OutHit.Location;
 		return true;
